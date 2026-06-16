@@ -73,6 +73,18 @@ npx http-server -p 3000
 
 替换 `assets/pet/` 下的精灵图即可。命名规则和注意事项见 [docs/reskin.md](./docs/reskin.md)。
 
+### 🤖 用 skill 自动换皮（推荐）
+
+不想手动出图？配套的 **[pet-reskin](https://github.com/techdou/pet-reskin)** skill 可以从一段角色描述自动生成一整套 9 张风格一致的精灵图、抠成透明 PNG、并改写本项目的 `pet.config.js`。它是 ZCode / Claude Code skill，严格遵循本仓库的 `docs/reskin.md` 契约。
+
+```bash
+# 安装 skill
+git clone https://github.com/techdou/pet-reskin ~/.agents/skills/pet-reskin
+
+# 之后在 ZCode / Claude Code 里说：
+# 「帮我用 pet-reskin 给 canvas-pet 做一只新桌宠，要一只……」
+```
+
 ---
 
 ## 部署到 GitHub Pages
@@ -80,15 +92,19 @@ npx http-server -p 3000
 1. 把本项目推到 GitHub 仓库（建议仓库名 `canvas-pet`）。
 2. 进入仓库 **Settings → Pages**。
 3. **Source** 选 `Deploy from a branch`，分支选 `main`、目录选 `/(root)`，保存。
-4. 等待约 1 分钟，访问 `https://<your-username>.github.io/canvas-pet/`。
+4. 等待约 1 分钟，访问 `https://<你的用户名>.github.io/canvas-pet/`。
 
 之后你的宠物页地址就是：
 
 ```
-https://<your-username>.github.io/canvas-pet/pet.html
+https://<你的用户名>.github.io/canvas-pet/pet.html
 ```
 
-把这个地址填进上面「嵌入到你的网页」的 iframe `src` 即可。
+把这个地址填进上面「嵌入到你的网页」的 iframe `src` 即可。本仓库的在线演示已部署在：
+
+```
+https://techdou.github.io/canvas-pet/pet.html
+```
 
 ---
 
@@ -104,6 +120,8 @@ canvas-pet/
 └── docs/
     ├── embed.md      # 嵌入模式 + postMessage 协议
     └── reskin.md     # 换皮规范（模板契约）
+
+配套工具：pet-reskin (https://github.com/techdou/pet-reskin) — 自动生成新角色形象
 ```
 
 ---
