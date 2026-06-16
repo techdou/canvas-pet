@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>canvas-pet · 一行 iframe 嵌入的桌宠</title>
+<style>
+  :root {
+    --bg: #FFFDF7;
+    --surface: #FFFFFF;
+    --ink: #2a2a2a;
+    --muted: #7a766c;
+    --gold: #E2C574;
+    --gold-soft: #f3e6c4;
+    --line: #ece6d8;
+    --radius: 14px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Noto Sans SC", "Work Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 920px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  header.hero {
+    padding: 88px 0 56px;
+    text-align: center;
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 6px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    margin-bottom: 22px;
+  }
+  h1 {
+    font-size: clamp(34px, 6vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    margin-bottom: 18px;
+  }
+  h1 em { font-style: normal; color: #c79a3e; }
+  .lead {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 620px;
+    margin: 0 auto 30px;
+  }
+  .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  }
+  .btn-primary { background: #2a2a2a; color: var(--bg); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.16); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .btn-ghost:hover { transform: translateY(-2px); border-color: var(--gold); }
+
+  /* Section */
+  section { padding: 56px 0; }
+  h2 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+  .section-sub { color: var(--muted); margin-bottom: 28px; }
+
+  /* Feature grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    transition: transform 0.3s var(--ease), border-color 0.3s var(--ease);
+  }
+  .card:hover { transform: translateY(-3px); border-color: var(--gold-soft); }
+  .card .ico { font-size: 22px; margin-bottom: 10px; }
+  .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .card p { font-size: 14px; color: var(--muted); }
+
+  /* Live demo box */
+  .demo-frame-wrap {
+    position: relative;
+    height: 320px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 20% 20%, #fff8e6 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, #eef3ff 0%, transparent 45%),
+      var(--surface);
+    margin-bottom: 12px;
+  }
+  .demo-frame-wrap iframe {
+    width: 100%; height: 100%; border: 0; display: block; background: transparent;
+  }
+  .demo-note { font-size: 13px; color: var(--muted); text-align: center; }
+
+  /* Code block */
+  pre {
+    background: #1f1d18;
+    color: #f3ead2;
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    overflow-x: auto;
+    font-size: 13.5px;
+    line-height: 1.7;
+    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", Consolas, monospace;
+  }
+  pre .c { color: #8a8576; }   /* comment */
+  pre .k { color: #e2c574; }   /* keyword/string highlight */
+  .code-block { position: relative; margin: 14px 0 26px; }
+  .code-label {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .copy-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(255,255,255,0.08);
+    color: #f3ead2;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 7px;
+    padding: 5px 11px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.16); }
+
+  /* Steps */
+  ol.steps { list-style: none; counter-reset: step; }
+  ol.steps li {
+    counter-increment: step;
+    padding: 14px 0 14px 48px;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+  ol.steps li:last-child { border-bottom: 0; }
+  ol.steps li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: 14px;
+    width: 30px; height: 30px;
+    background: var(--gold-soft);
+    color: #8a6d1f;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+  }
+  ol.steps code {
+    background: var(--gold-soft);
+    color: #6f571a;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 13px;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 32px 0 56px;
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+  }
+  footer a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); }
+  footer a:hover { border-color: var(--gold); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <span class="eyebrow">iframe-embeddable pet</span>
+    <h1>给你的页面 <em>养一只</em> 会走的桌宠</h1>
+    <p class="lead">canvas-pet 是一个纯前端的桌面宠物组件：会走、会睡、会被鼠标吓跑，还会偶尔冒一句金句气泡。一行 iframe 即可嵌入任何网页。</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#demo">查看实时演示</a>
+      <a class="btn btn-ghost" href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <h2>特性</h2>
+    <p class="section-sub">零依赖、零构建。一份 JS + 几张精灵图，往页面里一扔就能跑。</p>
+    <div class="grid">
+      <div class="card"><div class="ico">🪶</div><h3>一行嵌入</h3><p>任意网页加一个 iframe 即可，不需要改你的技术栈或打包流程。</p></div>
+      <div class="card"><div class="ico">🐾</div><h3>自然行为</h3><p>随机在走 / 呆 / 睡之间切换，带呼吸、眨眼、影子、边界弹性。</p></div>
+      <div class="card"><div class="ico">🖱️</div><h3>可拖拽</h3><p>鼠标按住宠物拖动，松手带惯性抛出。靠近它会受惊逃跑。</p></div>
+      <div class="card"><div class="ico">💬</div><h3>金句气泡</h3><p>定时冒一句文案，文案在配置里随意改。</p></div>
+      <div class="card"><div class="ico">🧩</div><h3>可换皮</h3><p>替换 assets/pet/ 里的精灵图 + 改配置，就是一只新宠物。</p></div>
+      <div class="card"><div class="ico">🪟</div><h3>点击穿透</h3><p>全屏覆盖模式下，iframe 不会挡住页面交互，只在命中宠物时接管。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="container">
+    <h2>实时演示</h2>
+    <p class="section-sub">下面是一个定尺寸的 iframe，宠物在框内自由活动。把鼠标移过去试试——它会躲开你，你也可以按住它拖动。</p>
+    <div class="demo-frame-wrap">
+      <iframe src="./pet.html" title="canvas-pet 实时演示" loading="lazy"></iframe>
+    </div>
+    <p class="demo-note">提示：金句气泡约每 9–18 秒冒一次；鼠标靠近 92px 内会触发逃跑。</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>两种嵌入方式</h2>
+    <p class="section-sub">最简单的是「盒子嵌入」——给 iframe 一个固定尺寸，宠物就在里面活动。要让它满屏游走又不挡页面，用「全屏覆盖」。</p>
+
+    <div class="code-block">
+      <span class="code-label">① 盒子嵌入（最简单）</span>
+      <button class="copy-btn" data-copy="code-box">复制</button>
+      <pre id="code-box"><span class="c">&lt;!-- 把 src 指向你部署后的 pet.html 路径 --&gt;</span>
+&lt;<span class="k">iframe</span> src=<span class="k">"https://your-username.github.io/canvas-pet/pet.html"</span>
+        width=<span class="k">"320"</span> height=<span class="k">"240"</span> frameborder=<span class="k">"0"</span>
+        style=<span class="k">"border:0;background:transparent;"</span>
+        title=<span class="k">"canvas-pet"</span>&gt;&lt;/iframe&gt;</pre>
+    </div>
+
+    <div class="code-block">
+      <span class="code-label">② 全屏覆盖 + 点击穿透（带拖拽）</span>
+      <button class="copy-btn" data-copy="code-full">复制</button>
+      <pre id="code-full"><span class="c">// 宿主页面：让 iframe 满屏覆盖、默认鼠标穿透，仅在命中宠物时接管拖拽。</span>
+<span class="c">// source 必须与 pet.config.js 的 parentSource 一致（默认 'pet-host'）。</span>
+
+&lt;<span class="k">iframe</span> id=<span class="k">"petFrame"</span> src=<span class="k">"https://your-username.github.io/canvas-pet/pet.html"</span>
+        style=<span class="k">"position:fixed;inset:0;width:100vw;height:100vh;border:0;z-index:900;pointer-events:none;background:transparent;"</span>&gt;&lt;/iframe&gt;
+
+&lt;<span class="k">script</span>&gt;
+(<span class="k">function</span> () {
+  <span class="k">const</span> SOURCE = <span class="k">'pet-host'</span>;
+  <span class="k">const</span> frame = document.getElementById(<span class="k">'petFrame'</span>);
+  <span class="k">let</span> hit = null, dragging = false;
+  <span class="k">const</span> inHit = (x, y) =&gt; hit &amp;&amp; x &gt;= hit.left &amp;&amp; x &lt;= hit.right &amp;&amp; y &gt;= hit.top &amp;&amp; y &lt;= hit.bottom;
+
+  window.addEventListener(<span class="k">'pointermove'</span>, e =&gt; frame.contentWindow.postMessage(
+    { source: SOURCE, type: <span class="k">'douknow-pet-pointer'</span>, x: e.clientX, y: e.clientY }, <span class="k">'*'</span>), { passive: true });
+
+  window.addEventListener(<span class="k">'pointerdown'</span>, e =&gt; {
+    <span class="k">if</span> (!inHit(e.clientX, e.clientY)) <span class="k">return</span>;
+    dragging = true;
+    frame.style.pointerEvents = <span class="k">'auto'</span>;
+    frame.contentWindow.postMessage(
+      { source: SOURCE, type: <span class="k">'douknow-pet-drag-start'</span>, x: e.clientX, y: e.clientY }, <span class="k">'*'</span>);
+  });
+  window.addEventListener(<span class="k">'pointermove'</span>, e =&gt; {
+    <span class="k">if</span> (!dragging) <span class="k">return</span>;
+    frame.contentWindow.postMessage(
+      { source: SOURCE, type: <span class="k">'douknow-pet-drag-move'</span>, x: e.clientX, y: e.clientY }, <span class="k">'*'</span>);
+  });
+  <span class="k">const</span> end = () =&gt; {
+    <span class="k">if</span> (!dragging) <span class="k">return</span>;
+    dragging = false;
+    frame.style.pointerEvents = <span class="k">''</span>;
+    frame.contentWindow.postMessage({ source: SOURCE, type: <span class="k">'douknow-pet-drag-end'</span> }, <span class="k">'*'</span>);
+  };
+  window.addEventListener(<span class="k">'pointerup'</span>, end);
+  window.addEventListener(<span class="k">'pointercancel'</span>, end);
+
+  window.addEventListener(<span class="k">'message'</span>, e =&gt; {
+    <span class="k">const</span> d = e.data || {};
+    <span class="k">if</span> (d.source === <span class="k">'douknow-pet'</span> &amp;&amp; d.type === <span class="k">'douknow-pet-bounds'</span>) hit = d.bounds;
+  });
+})();
+&lt;/<span class="k">script</span>&gt;</pre>
+    </div>
+    <p class="section-sub">完整的消息协议字段表见 <code>docs/embed.md</code>。</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>本地预览</h2>
+    <p class="section-sub">因为是 iframe + 相对路径，需要通过 HTTP 访问（直接双击 html 打开也行，但部分浏览器会限制 file:// 协议）。</p>
+    <div class="code-block">
+      <button class="copy-btn" data-copy="code-serve">复制</button>
+      <pre id="code-serve"><span class="c"># 在项目根目录任选一种</span>
+npx serve .
+<span class="c"># 或</span>
+npx http-server -p 3000</pre>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>三步自定义</h2>
+    <ol class="steps">
+      <li>改金句 / 尺寸 / 速度 / 数量：打开 <code>pet.config.js</code>，编辑里面的字段。</li>
+      <li>换皮肤：替换 <code>assets/pet/</code> 下的图片（命名见 <code>docs/reskin.md</code>）。</li>
+      <li>部署：推到 GitHub，仓库 Settings → Pages → 从 main 分支发布（根目录）。</li>
+    </ol>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    canvas-pet · MIT License · <a href="./docs/embed.md">嵌入协议</a> · <a href="./docs/reskin.md">换皮指南</a>
+  </div>
+</footer>
+
+<script>
+  // 复制按钮
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = document.getElementById(btn.dataset.copy);
+      if (!target) return;
+      const text = target.innerText;
+      navigator.clipboard?.writeText(text).then(() => {
+        const old = btn.textContent;
+        btn.textContent = '已复制';
+        setTimeout(() => { btn.textContent = old; }, 1200);
+      }).catch(() => {});
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "name": "canvas-pet",
+  "version": "1.0.0",
+  "description": "一行 iframe 嵌入的桌宠：会走、会睡、会被鼠标吓跑、会冒金句气泡。纯前端、零依赖。",
+  "license": "MIT",
+  "keywords": [
+    "pet",
+    "canvas",
+    "iframe",
+    "desktop-pet",
+    "widget",
+    "embed",
+    "sprite",
+    "animation"
+  ],
+  "scripts": {
+    "serve": "npx serve ."
+  },
+  "files": [
+    "index.html",
+    "pet.html",
+    "pet.config.js",
+    "pet.js",
+    "assets/",
+    "docs/"
+  ]
+}
