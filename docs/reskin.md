@@ -10,31 +10,31 @@
 
 所有精灵图放在 `assets/pet/` 下。引擎按 `pet.config.js` 的 `frames.*` 路径加载，所以**文件名其实可以任意**——但为了模板的统一性和可读性，强烈建议遵循下面的命名约定。
 
+默认形象为「豆懂」（WebP 格式），下表文件名与之对齐。
+
 | 配置键（`frames.*`） | 建议文件名 | 用途 | 朝向 / 内容要求 |
 |---|---|---|---|
-| `idle` | `idle.png` | 默认静止/呆立 | 正面朝向，画面居中 |
-| `idleWink` | `idle-wink.png` | 呆立时随机眨眼 | 与 idle 同构图，仅眼睛闭合 |
-| `walkFront1` | `walk-front-1.png` | 正面行走 帧1 | 正面朝向 |
-| `walkFront2` | `walk-front-2.png` | 正面行走 帧2 | 与帧1交替形成步态 |
-| `walkLeft` | `walk-left-1.png` | 左行 | 朝左 |
-| `walkRight` | `walk-right-1.png` | 右行 | **必须直接是朝右的帧**（见下方警告） |
-| `walkBack` | `walk-back-1.png` | 背向行走 | 背面朝向 |
-| `sleep` | `sleep.png` | 睡觉 | 闭眼/安睡姿态 |
-| `cloud` | `cloud.png` | 宠物脚下云朵（可选） | 宽高比约 2:1，作为软影子替代 |
+| `idle` | `idle.webp` | 默认静止/呆立 | 正面朝向，画面居中 |
+| `idleWink` | `idle-wink.webp` | 呆立时随机眨眼 | 与 idle 同构图，仅眼睛闭合 |
+| `walkFront1` | `walk-front-1.webp` | 正面行走 帧1 | 正面朝向 |
+| `walkFront2` | `walk-front-2.webp` | 正面行走 帧2 | 与帧1交替形成步态 |
+| `walkLeft` | `walk-left.webp` | 左行 | 朝左 |
+| `walkRight` | `walk-right.webp` | 右行 | **必须直接是朝右的帧**（见下方警告） |
+| `walkBack` | `walk-back-1.webp` | 背向行走 | 背面朝向 |
+| `sleep` | `sleep.webp` | 睡觉 | 闭眼/安睡姿态 |
+| `cloud` | `jindou-cloud.webp` | 宠物脚下云朵（可选） | 宽高比约 2:1，作为软影子替代 |
 
 ### 图片规格
 
 - **尺寸**：建议每张是接近 1:1 的方图（引擎按正方形绘制：`drawImage` 用同一个 `size` 宽高）。像素无硬性要求，但建议 ≥ 256×256 以保证清晰。
-- **背景**：透明 PNG。
+- **背景**：透明。默认使用 WebP（体积更小、现代浏览器全支持）；如需兼容极老浏览器可换 PNG，同步改 `frames.*` 后缀即可。
 - **构图**：角色在画面中央，四周留白对称，否则行走时会「偏腿」。
 
-### ⚠️ `walk-right-1.png` 的关键约束
+### ⚠️ `walk-right.webp` 的关键约束
 
 > 引擎**不做运行时镜像翻转**。右行时直接绘制 `walkRight` 这张图。
 
-这意味着：`walk-right-1.png` **必须就是朝右的那一帧**，不能是朝左的图指望引擎帮你翻。
-
-历史上存在过一个有 bug 的 `walk-right-1.png`（朝向其实是偏左的，会导致右行时看起来在倒退），当时是用一张 `walk-right-fixed.png` 修正。本模板已经把修正版作为正式的 `walk-right-1.png`，换皮时请确保你的新右行帧同样直接出右朝向。
+这意味着：`walk-right.webp` **必须就是朝右的那一帧**，不能是朝左的图指望引擎帮你翻。换皮时请确保你的新右行帧直接出右朝向。
 
 ---
 
@@ -57,7 +57,7 @@
 
 ## 三、换皮流程（四步）
 
-1. **出图**：按「精灵图清单」产出 9 张 PNG（`cloud.png` 可选）。重点检查 `walk-right-1.png` 确实朝右。
+1. **出图**：按「精灵图清单」产出 9 张图（默认 WebP，`cloud` 可选）。重点检查 `walk-right.webp` 确实朝右。
 2. **放图**：把新图丢进 `assets/pet/`，覆盖同名文件（或改名后同步改 `pet.config.js` 的 `frames.*`）。
 3. **改配置**：编辑 `pet.config.js`，调整 `quotes`（文案）、必要时调 `baseSize` / 云朵缩放。
 4. **验证**：本地 `npx serve .` 打开 `http://localhost:3000/pet.html`，确认各方向行走朝向正确、金句正常、云朵位置合适。

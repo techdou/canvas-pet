@@ -50,16 +50,16 @@ const DEFAULT_CONFIG = {
   // 宿主识别码：iframe 只接受 source === parentSource 的 postMessage
   parentSource: 'pet-host',
   frames: {
-    idle: './assets/pet/idle.png',
-    idleWink: './assets/pet/idle-wink.png',
-    walkFront1: './assets/pet/walk-front-1.png',
-    walkFront2: './assets/pet/walk-front-2.png',
-    walkLeft: './assets/pet/walk-left-1.png',
-    // walk-right-1.png 必须直接就是「朝右」的帧，引擎不做运行时镜像。
-    walkRight: './assets/pet/walk-right-1.png',
-    walkBack: './assets/pet/walk-back-1.png',
-    sleep: './assets/pet/sleep.png',
-    cloud: './assets/pet/cloud.png'
+    idle: './assets/pet/idle.webp',
+    idleWink: './assets/pet/idle-wink.webp',
+    walkFront1: './assets/pet/walk-front-1.webp',
+    walkFront2: './assets/pet/walk-front-2.webp',
+    walkLeft: './assets/pet/walk-left.webp',
+    // walk-right.webp 必须直接就是「朝右」的帧，引擎不做运行时镜像。
+    walkRight: './assets/pet/walk-right.webp',
+    walkBack: './assets/pet/walk-back-1.webp',
+    sleep: './assets/pet/sleep.webp',
+    cloud: './assets/pet/jindou-cloud.webp'
   }
 };
 

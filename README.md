@@ -2,7 +2,7 @@
 
 > 一行 `<iframe>` 即可给任何网页养一只会走的桌宠：走、睡、被鼠标吓跑、拖拽抛掷，偶尔冒一句金句气泡。纯前端、零依赖、零构建。
 
-![canvas-pet](./assets/pet/idle.png)
+![canvas-pet](./assets/pet/idle.webp)
 
 ---
 
@@ -65,7 +65,7 @@ npx http-server -p 3000
 | `fleeRadius` | 受惊逃跑的触发半径（px） | `92` |
 | `talkIntervalRange` | 两次金句的间隔范围（ms） | `[9000, 18000]` |
 | `parentSource` | 宿主页面 postMessage 的识别码 | `'pet-host'` |
-| `frames.*` | 精灵图路径 | `./assets/pet/*.png` |
+| `frames.*` | 精灵图路径 | `./assets/pet/*.webp` |
 
 > `pet.js` 内部有一份 `DEFAULT_CONFIG` 兜底。即使删掉 `pet.config.js` 或某字段缺失，宠物也能正常运行（不会白屏）。
 
